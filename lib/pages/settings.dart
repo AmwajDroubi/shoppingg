@@ -144,8 +144,11 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping/model/app_routs.dart';
 import 'package:shopping/model/setting_model.dart';
+import 'package:shopping/view_block/auth_cubit/auth_cubit.dart';
 import 'package:shopping/view_block/profile_cubit/profile_cubit.dart';
+import 'package:shopping/widget/main_button.dart';
 
 class SettingP extends StatelessWidget {
   const SettingP({super.key});
@@ -153,6 +156,7 @@ class SettingP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileCubit = BlocProvider.of<ProfileCubit>(context);
+    final authCubit = BlocProvider.of<AuthCubit>(context);
     return BlocBuilder<ProfileCubit, ProfileState>(
         bloc: profileCubit,
         buildWhen: (previous, current) =>
@@ -273,29 +277,61 @@ class SettingP extends StatelessWidget {
                                     const SizedBox(
                                       height: 19,
                                     ),
-                                    InkWell(
-                                      onTap: () {},
-                                      child: Container(
-                                        color: Colors.grey[100],
-                                        height: 64,
-                                        child: const ListTile(
-                                          leading: Icon(
-                                            Icons.logout,
-                                            size: 35,
+                                    BlocConsumer<AuthCubit, AuthState>(
+                                      bloc: authCubit,
+                                      listenWhen: (previous, current) =>
+                                          current is SignedOut ||
+                                          current is AuthFailed,
+                                      listener: (context, state) {
+                                        if (state is AuthFailed) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content:
+                                                      Text(state.message)));
+                                        } else if (state is SignedOut) {
+                                          Navigator.of(context)
+                                              .pushReplacementNamed(
+                                                  AppRoutes.signIn);
+                                        }
+                                      },
+                                      buildWhen: (previous, current) =>
+                                          current is SigningOut ||
+                                          current is SignedOut ||
+                                          current is AuthFailed,
+                                      builder: (context, state) {
+                                        if (state is SigningOut) {
+                                          return MainButton(
+                                            isLoading: true,
+                                          );
+                                        }
+
+                                        return InkWell(
+                                          onTap: () async =>
+                                              await authCubit.signOut(),
+                                          child: Container(
+                                            color: Colors.grey[100],
+                                            height: 64,
+                                            child: const ListTile(
+                                              leading: Icon(
+                                                Icons.logout,
+                                                size: 35,
+                                              ),
+                                              title: Text(
+                                                "Logout",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              trailing: Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 30,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
                                           ),
-                                          title: Text(
-                                            "Logout",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                          trailing: Icon(
-                                            Icons.arrow_forward_ios,
-                                            size: 30,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ),
+                                        );
+                                      },
                                     ),
                                     const SizedBox(
                                       height: 19,

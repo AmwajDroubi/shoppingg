@@ -22,6 +22,37 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  void authcheck() {
+    final user = authServices.currentUser;
+    if (user != null)
+      emit(AuthSuccess());
+    else
+      emit(AuthInitial());
+  }
+
+  // Future<void> signOut() async {
+  //   await authServices.signOut();
+    
+  //   emit(SigningOut());
+  //   try {
+  //     await authServices.signOut();
+  //     emit(AuthInitial());
+  //   } catch (e) {
+  //     emit(AuthFailed(e.toString()));
+  //   }
+    
+  // }
+  Future<void> signOut() async {
+  emit(SigningOut()); // إظهار حالة تسجيل الخروج
+  try {
+    await authServices.signOut(); // تنفيذ عملية تسجيل الخروج
+    emit(SignedOut()); // حالما تنجح العملية، ارجع إلى الحالة الابتدائية
+  } catch (e) {
+    emit(AuthFailed(e.toString())); // إذا حدث خطأ، أظهر حالة الخطأ
+  }
+}
+
+
   Future<void> signUp(String email, String password) async {
     emit(AuthLoading());
     try {

@@ -249,6 +249,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopping/view_block/signup/signup_cubit.dart';
 import 'package:shopping/view_block/signup/signup_state.dart';
+import 'package:shopping/widget/main_button.dart';
 import 'package:shopping/widget/nav_bar.dart';
 
 class SignUpPage extends StatelessWidget {
@@ -261,77 +262,155 @@ class SignUpPage extends StatelessWidget {
   }
 }
 
-class SignUpForm extends StatelessWidget {
+class SignUpForm extends StatefulWidget {
+  @override
+  State<SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final confirmPasswordController = TextEditingController();
+
   final formKey = GlobalKey<FormState>();
+
+  bool isSecured = true;
 
   @override
   Widget build(BuildContext context) {
     final signUpCubit = BlocProvider.of<SignUpCubit>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
+      //   appBar: AppBar(title: Text('Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Email is required' : null,
-              ),
-              TextFormField(
-                controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Password is required' : null,
-              ),
-              TextFormField(
-                controller: confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
-                obscureText: true,
-                validator: (value) => value != passwordController.text
-                    ? 'Passwords do not match'
-                    : null,
-              ),
-              SizedBox(height: 20),
-              BlocConsumer<SignUpCubit, SignUpState>(
-                listener: (context, state) {
-                  if (state is SignUpSuccess) {
-                    Navigator.pushReplacementNamed(context, '/home');
-                  } else if (state is SignUpFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state is SignUpLoading) {
-                    return CircularProgressIndicator();
-                  }
-                  return ElevatedButton(
-                    onPressed: () {
-                      if (formKey.currentState?.validate() ?? false) {
-                        signUpCubit.signUp(
-                          emailController.text,
-                          passwordController.text,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 50),
+                Text(
+                  'SignUp Account',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Please, signup by write your email, password and confairm password',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Colors.grey,
+                      ),
+                ),
+                const SizedBox(height: 20),
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset("assets/shop/welcom.jpg")),
+                SizedBox(
+                  height: 12,
+                ),
+                TextFormField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                      labelText: 'Email', prefixIcon: Icon(Icons.email)),
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Email is required' : null,
+                ),
+                SizedBox(
+                  height: 24,
+                ),
+                TextFormField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isSecured ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isSecured = !isSecured;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: true,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Password is required' : null,
+                ),
+                SizedBox(
+                  height: 24,
+                ),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isSecured ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isSecured = !isSecured;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: true,
+                  validator: (value) => value != passwordController.text
+                      ? 'Passwords do not match'
+                      : null,
+                ),
+                SizedBox(height: 30),
+                BlocConsumer<SignUpCubit, SignUpState>(
+                  listener: (context, state) {
+                    if (state is SignUpSuccess) {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } else if (state is SignUpFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is SignUpLoading) {
+                      return CircularProgressIndicator();
+                    }
+                    return ElevatedButton(
+                        onPressed: () {
+                          if (formKey.currentState?.validate() ?? false) {
+                            signUpCubit.signUp(
+                                emailController.text,
+                                passwordController.text,
+                                confirmPasswordController.text);
+                          }
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  BottomNavBar(orderProduct: [])));
+                        },
+                        child: MainButton(
+                          label: 'SignUp',
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              await signUpCubit.signUp(
+                                  emailController.text,
+                                  passwordController.text,
+                                  confirmPasswordController.text);
+                            }
+                          },
+                        )
+                        //    child: Text('Sign Up'),
                         );
-                      }
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              BottomNavBar(orderProduct: [])));
-                    },
-                    child: Text('Sign Up'),
-                  );
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

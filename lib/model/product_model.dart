@@ -90,6 +90,7 @@ class ProductModel {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+  
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
@@ -104,7 +105,7 @@ class ProductModel {
     return result;
   }
 
-  factory ProductModel.fromMap(Map<String, dynamic> map) {
+  factory ProductModel.fromMap(Map<String, dynamic> map,String documentId) {
     return ProductModel(
       id: map['id'] ?? '',
       name: map['name'] ?? '',

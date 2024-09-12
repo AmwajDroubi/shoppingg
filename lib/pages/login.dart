@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopping/pages/forgetpass.dart';
 import 'package:shopping/pages/home.dart';
 import 'package:shopping/pages/signup.dart';
 import 'package:shopping/view_block/auth_cubit/auth_cubit.dart';
 import 'package:shopping/widget/main_button.dart';
+import 'package:shopping/widget/nav_bar.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -47,14 +49,21 @@ class _SignInPageState extends State<SignInPage> {
                           color: Colors.grey,
                         ),
                   ),
-                  const SizedBox(height: 36),
+                  const SizedBox(height: 20),
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset("assets/shop/welcom1.jpg")),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  //    const SizedBox(height: 36),
                   Text(
                     'Email',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 9),
                   TextFormField(
                     controller: emailController,
                     validator: (value) {
@@ -75,19 +84,19 @@ class _SignInPageState extends State<SignInPage> {
                       prefixIconColor: Colors.grey[400],
                     ),
                   ),
-                  const SizedBox(height: 36),
+                  const SizedBox(height: 30),
                   Text(
                     'Password',
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 9),
                   TextFormField(
                     controller: passwordController,
                     validator: (value) =>
                         value!.isNotEmpty ? null : 'Password is required',
-                    obscureText: true,
+                    obscureText: isSecured,
                     decoration: InputDecoration(
                       hintText: 'Enter your password',
                       hintStyle:
@@ -113,7 +122,10 @@ class _SignInPageState extends State<SignInPage> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ForgetPass()));
+                      },
                       child: Text(
                         'Forgot Password?',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -122,7 +134,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 6),
                   BlocConsumer<AuthCubit, AuthState>(
                     bloc: authCubit,
                     listenWhen: (previous, current) =>
@@ -131,9 +143,7 @@ class _SignInPageState extends State<SignInPage> {
                       if (state is AuthSuccess) {
                         // Navigator.pushNamed(context, AppRoutes.home);
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => HomePage(
-                                  addFavorite: (ProductModel) {},
-                                  removeFavorite: (ProductModel) {},
+                            builder: (context) => BottomNavBar(
                                   orderProduct: [],
                                 )));
                       } else if (state is AuthFailed) {
@@ -168,12 +178,15 @@ class _SignInPageState extends State<SignInPage> {
                       );
                     },
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  // SizedBox(
+                  //   height: 3,
+                  // ),
                   Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      children: [
+                        Text("If you dont have account, Please"),
+                        TextButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => BlocProvider(
@@ -181,7 +194,36 @@ class _SignInPageState extends State<SignInPage> {
                                       child: SignUpPage(),
                                     )));
                           },
-                          child: Text("SignUp")))
+                          child: Text(
+                            "SignUp",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                  // Align(
+                  //     alignment: Alignment.centerRight,
+                  //     child: TextButton(
+                  //         onPressed: () {
+                  //           Navigator.of(context).push(MaterialPageRoute(
+                  //               builder: (context) => BlocProvider(
+                  //                     create: (context) => AuthCubit(),
+                  //                     child: SignUpPage(),
+                  //                   )));
+                  //         },
+                  //         child: Row(
+                  //           children: [
+                  //             Text("If you dont have account, Please "),
+                  //             Text(
+                  //               "SignUp",
+                  //               style: TextStyle(
+                  //                   fontWeight: FontWeight.bold, fontSize: 22),
+                  //             ),
+                  //           ],
+                  //         )))
                 ],
               ),
             ),

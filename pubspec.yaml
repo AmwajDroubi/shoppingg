@@ -45,6 +45,7 @@ dependencies:
   firebase_core: ^3.4.0
   firebase_auth: ^5.2.0
   flutter_bloc: ^8.1.6
+  cloud_firestore: ^5.4.1
 
 
   
@@ -119,6 +120,8 @@ flutter:
     - assets\shop\54.jpg
     - assets\shop\55.jpg
     - assets\shop\56.jpg
+    - assets\shop\welcom.jpg
+    - assets\shop\welcom1.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

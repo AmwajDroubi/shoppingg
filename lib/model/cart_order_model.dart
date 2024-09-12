@@ -30,7 +30,7 @@ class CartOrdersModel {
  factory CartOrdersModel.fromMap(Map<String, dynamic> map) {
     return CartOrdersModel(
       id: map['id'] ?? '',
-      product: ProductModel.fromMap(map['product'] ?? {}),
+      product: ProductModel.fromMap(map['product'] ?? {},map['product']['id']),
       totalPrice: map['totalPrice']?.toDouble() ?? 0.0,
       quantity: map['quantity']?.toInt() ?? 1,
       size: ProductSizeExtension.fromString(map['size'] ?? ''), // Make sure 'size' is a valid string

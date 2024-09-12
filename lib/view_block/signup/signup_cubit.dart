@@ -16,16 +16,24 @@ class SignUpCubit extends Cubit<SignUpState> {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Future<void> signUp(String email, String password) async {
-    emit(SignUpLoading());
-    try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password.trim(),
-      );
-      emit(SignUpSuccess());
-    } catch (e) {
-      emit(SignUpFailure(e.toString()));
-    }
+  Future<void> signUp(String email, String password, String confirmPassword) async {
+  emit(SignUpLoading());
+
+  // تحقق من تطابق كلمة المرور مع تأكيد كلمة المرور
+  if (password != confirmPassword) {
+    emit(SignUpFailure('كلمة المرور وتأكيد كلمة المرور غير متطابقتين'));
+    return;
   }
+
+  try {
+    await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email.trim(),
+      password: password.trim(),
+    );
+    emit(SignUpSuccess());
+  } catch (e) {
+    emit(SignUpFailure(e.toString()));
+  }
+}
+
 }
